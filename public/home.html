@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Workspace</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(-45deg, #667eea, #764ba2, #ff758c, #43cea2);
+      background-size: 400% 400%;
+      animation: bgMove 12s ease infinite;
+      color: white;
+      overflow: hidden;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .home-container {
+      text-align: center;
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      text-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      animation: fadeDown 1s ease;
+    }
+
+    p {
+      opacity: 0.9;
+      margin-bottom: 40px;
+      animation: fadeUp 1.2s ease;
+    }
+
+    .card-wrapper {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .home-card {
+      width: 260px;
+      height: 180px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      color: white;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .home-card::before {
+      content: '';
+      position: absolute;
+      width: 120%;
+      height: 120%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+      top: -120%;
+      left: -120%;
+      transition: all 0.6s ease;
+    }
+
+    .home-card:hover::before {
+      top: 120%;
+      left: 120%;
+    }
+
+    .home-card:hover {
+      transform: translateY(-12px) scale(1.05);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+    }
+
+    .home-card h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .home-card span {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .emoji {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Floating bubbles */
+    .bubble {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      animation: float 10s infinite ease-in-out;
+    }
+
+    .bubble:nth-child(1) { top: 10%; left: 20%; animation-duration: 14s; }
+    .bubble:nth-child(2) { top: 70%; left: 15%; animation-duration: 12s; }
+    .bubble:nth-child(3) { top: 40%; left: 80%; animation-duration: 16s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-30px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating bubbles -->
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+
+  <div class="home-container">
+    <h1>✨ My Digital Space</h1>
+    <p>Manage your tasks and capture your thoughts beautifully</p>
+
+    <div class="card-wrapper">
+      <a href="/index.html" class="home-card">
+        <div class="emoji">📦</div>
+        <h2>Item Manager</h2>
+        <span>Track & organize items</span>
+      </a>
+
+      <a href="/diary.html" class="home-card">
+        <div class="emoji">📔</div>
+        <h2>Diary</h2>
+        <span>Write your daily thoughts</span>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

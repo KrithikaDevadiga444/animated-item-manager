@@ -14,7 +14,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
 const itemsRouter = require('./routes/items');
+const diaryRouter = require('./routes/diary');   // 👈 NEW
+
 app.use('/api/items', itemsRouter);
+app.use('/api/diary', diaryRouter);              // 👈 NEW
 
 // connect to MongoDB
 const MONGO_URI = process.env.MONGO_URI;

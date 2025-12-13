@@ -128,6 +128,8 @@
   </style>
 </head>
 <body>
+  <a href="/home.html" class="home-btn">🏠 Home</a>
+
   <h1>Animated Item Manager</h1>
 
   <div class="form-container">
@@ -148,6 +150,10 @@
 
   <script>
     const loadItems = async () => {
+      const diaryRoutes = require('./routes/diary');
+
+app.use('/api/diary', diaryRoutes);
+
       const res = await fetch('/api/items');
       const items = await res.json();
       const list = document.getElementById('itemsList');

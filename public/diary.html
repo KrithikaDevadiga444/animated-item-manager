@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Diary</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="diary-page">
+
+<a href="/home.html" class="home-btn">🏠 Home</a>
+
+<h1>My Diary</h1>
+
+<div class="diary-container">
+  <textarea id="content" placeholder="Write your thoughts..."></textarea>
+  <button class="add-btn" onclick="addEntry()">Save</button>
+</div>
+
+<div class="entries-list" id="entries"></div>
+
+<script>
+async function loadDiary() {
+  const res = await fetch('/api/diary');
+  const data = await res.json();
+  const div = document.getElementById('entries');
+  div.innerHTML = '';
+
+  data.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'entry-card';
+
+    card.innerHTML = `
+      <div class="entry-header">
+        <strong>${new Date(d.createdAt).toDateString()}</strong>
+      </div>
+      <p class="entry-content">${d.content}</p>
+      <div class="entry-buttons">
+        <button onclick="editEntry('${d._id}', '${d.content.replace(/'/g,"\\'")}')">Edit</button>
+        <button onclick="deleteEntry('${d._id}')">Delete</button>
+      </div>
+    `;
+    div.appendChild(card);
+  });
+}
+
+async function addEntry() {
+  const content = document.getElementById('content').value;
+  if (!content) return;
+
+  await fetch('/api/diary', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ content })
+  });
+
+  document.getElementById('content').value = '';
+  loadDiary();
+}
+
+async function deleteEntry(id) {
+  await fetch('/api/diary/' + id, { method: 'DELETE' });
+  loadDiary();
+}
+
+async function editEntry(id, oldText) {
+  const newText = prompt('Edit entry:', oldText);
+  if (!newText) return;
+
+  await fetch('/api/diary/' + id, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ content: newText })
+  });
+
+  loadDiary();
+}
+
+loadDiary();
+</script>
+
+</body>
+</html>
