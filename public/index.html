@@ -149,45 +149,50 @@
   </div>
 
   <script>
+    // Load items from backend
     const loadItems = async () => {
-      const diaryRoutes = require('./routes/diary');
+      try {
+        // Fetch items
+        const res = await fetch('/api/items');
+        const items = await res.json();
+        const list = document.getElementById('itemsList');
+        list.innerHTML = '';
 
-app.use('/api/diary', diaryRoutes);
+        items.forEach(it => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span><strong>${it.name}</strong> (${it.category}) - Qty: ${it.quantity}</span>
+            <span class="info">Added by: ${it.addedBy || 'Anonymous'}</span>
+            <div class="buttons">
+              <button class="bought-btn" onclick="inc('${it._id}')">+1</button>
+              <button class="delete-btn" onclick="del('${it._id}')">Delete</button>
+            </div>
+          `;
+          list.appendChild(li);
+        });
 
-      const res = await fetch('/api/items');
-      const items = await res.json();
-      const list = document.getElementById('itemsList');
-      list.innerHTML = '';
-      items.forEach(it => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span><strong>${it.name}</strong> (${it.category}) - Qty: ${it.quantity}</span>
-          <span class="info">Added by: ${it.addedBy || 'Anonymous'}</span>
-          <div class="buttons">
-            <button class="bought-btn" onclick="inc('${it._id}')">+1</button>
-            <button class="delete-btn" onclick="del('${it._id}')">Delete</button>
-          </div>
-        `;
-        list.appendChild(li);
-      });
-
-      // load stats
-      const statsRes = await fetch('/api/items/stats');
-      const stats = await statsRes.json();
-      const statsList = document.getElementById('statsList');
-      statsList.innerHTML = '';
-      stats.forEach(s => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${s._id}</strong>: ${s.count} items (Total Qty: ${s.totalQty})`;
-        statsList.appendChild(li);
-      });
+        // Fetch stats
+        const statsRes = await fetch('/api/items/stats');
+        const stats = await statsRes.json();
+        const statsList = document.getElementById('statsList');
+        statsList.innerHTML = '';
+        stats.forEach(s => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${s._id}</strong>: ${s.count} items (Total Qty: ${s.totalQty})`;
+          statsList.appendChild(li);
+        });
+      } catch (err) {
+        console.error('Error loading items:', err);
+      }
     };
 
+    // Delete item
     async function del(id) {
       await fetch('/api/items/' + id, { method: 'DELETE' });
       loadItems();
     }
 
+    // Increment quantity
     async function inc(id) {
       const r = await fetch('/api/items/' + id);
       const it = await r.json();
@@ -199,6 +204,7 @@ app.use('/api/diary', diaryRoutes);
       loadItems();
     }
 
+    // Add new item
     document.getElementById('addBtn').addEventListener('click', async () => {
       const name = document.getElementById('name').value;
       const category = document.getElementById('category').value || 'General';
@@ -211,13 +217,16 @@ app.use('/api/diary', diaryRoutes);
         body: JSON.stringify({ name, category, quantity, addedBy })
       });
 
+      // Reset form
       document.getElementById('name').value = '';
       document.getElementById('category').value = '';
       document.getElementById('quantity').value = 1;
       document.getElementById('addedBy').value = '';
+
       loadItems();
     });
 
+    // Initial load
     loadItems();
   </script>
 </body>
