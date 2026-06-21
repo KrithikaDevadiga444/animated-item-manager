@@ -1,34 +1,70 @@
 const express = require('express');
 const router = express.Router();
 const Diary = require('../models/Diary');
+const { requireAuth } = require('../middleware/auth');
 
-// GET all diary entries
+router.use(requireAuth);
+
+// GET /api/diary — sort by newest (default) or oldest
 router.get('/', async (req, res) => {
-  const entries = await Diary.find().sort({ createdAt: -1 });
-  res.json(entries);
+  try {
+    const sortOrder = req.query.sort === 'oldest' ? 1 : -1;
+    const entries = await Diary.find({ user: req.session.userId }).sort({ createdAt: sortOrder });
+    res.json(entries);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// CREATE diary entry
+// POST /api/diary
 router.post('/', async (req, res) => {
-  const entry = new Diary(req.body);
-  const saved = await entry.save();
-  res.json(saved);
+  try {
+    const { content } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+
+    const entry = new Diary({
+      user: req.session.userId,
+      content: content.trim()
+    });
+    const saved = await entry.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
-// UPDATE diary entry
+// PUT /api/diary/:id
 router.put('/:id', async (req, res) => {
-  const updated = await Diary.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(updated);
+  try {
+    const { content } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+
+    const updated = await Diary.findOneAndUpdate(
+      { _id: req.params.id, user: req.session.userId },
+      { content: content.trim(), updatedAt: Date.now() },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ error: 'Not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
-// DELETE diary entry
+// DELETE /api/diary/:id
 router.delete('/:id', async (req, res) => {
-  await Diary.findByIdAndDelete(req.params.id);
-  res.json({ message: 'Deleted' });
+  try {
+    const deleted = await Diary.findOneAndDelete({ _id: req.params.id, user: req.session.userId });
+    if (!deleted) return res.status(404).json({ error: 'Not found' });
+    res.json({ message: 'Deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

@@ -1,233 +1,143 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Animated Item Manager</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      color: #fff;
-    }
-
-    @keyframes gradientBG {
-      0% {background-position:0% 50%;}
-      50% {background-position:100% 50%;}
-      100% {background-position:0% 50%;}
-    }
-
-    h1 {
-      text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-      margin-bottom: 20px;
-      font-size: 2em;
-    }
-
-    .form-container {
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 30px;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    input, select {
-      padding: 10px;
-      margin: 5px 0 15px 0;
-      width: 100%;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      background: rgba(255,255,255,0.8);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    input:focus, select:focus {
-      transform: scale(1.02);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-
-    button {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: transform 0.2s, box-shadow 0.2s;
-      margin-right: 5px;
-    }
-
-    button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-
-    .add-btn { background: #ff6f61; color: #fff; }
-    .add-btn:hover { background: #ff3b2f; }
-
-    button.delete-btn { background: #e74c3c; color: #fff; }
-    button.bought-btn { background: #3498db; color: #fff; }
-
-    ul { list-style: none; padding: 0; width: 100%; max-width: 600px; }
-    li {
-      background: rgba(255,255,255,0.2);
-      backdrop-filter: blur(8px);
-      border-radius: 15px;
-      padding: 15px;
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      animation: fadeIn 0.6s ease;
-    }
-
-    li span { margin: 2px 0; }
-
-    li strong { font-size: 1.1em; }
-
-    li .info {
-      margin-top: 5px;
-      font-size: 0.9em;
-      color: #eee;
-    }
-
-    li .buttons {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .bought { text-decoration: line-through; color: #ccc; }
-
-    #stats {
-      max-width: 600px;
-      width: 100%;
-      margin-top: 30px;
-      background: rgba(255,255,255,0.15);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(-10px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Item Manager</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <a href="/home.html" class="home-btn">🏠 Home</a>
+  <div class="page">
+    <nav id="navbar" class="navbar">
+      <div class="navbar-left">
+        <a href="/home.html" class="nav-link">Home</a>
+        <a href="/index.html" class="nav-link active">Items</a>
+        <a href="/diary.html" class="nav-link">Diary</a>
+      </div>
+      <div class="navbar-right">
+        <span class="user-badge"></span>
+        <button class="btn-logout">Log Out</button>
+      </div>
+    </nav>
 
-  <h1>Animated Item Manager</h1>
+    <header class="page-header">
+      <h1>📦 Item Manager</h1>
+      <p>Your personal inventory — search, filter, and track what you need</p>
+    </header>
 
-  <div class="form-container">
-    <input id="name" placeholder="Item name">
-    <input id="category" placeholder="Category (e.g., Daily, Grocery)">
-    <input id="quantity" type="number" placeholder="Quantity" value="1">
-    <input id="addedBy" placeholder="Your Name">
-    <button id="addBtn" class="add-btn">Add Item</button>
+    <!-- Category dashboard -->
+    <section class="panel" id="statsPanel">
+      <h2 class="panel-title">Overview by Category</h2>
+      <div id="statsGrid" class="stats-grid"></div>
+    </section>
+
+    <!-- Add item form -->
+    <section class="panel">
+      <h2 class="panel-title">Add New Item</h2>
+      <form id="addForm" class="form-grid">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input id="name" required placeholder="e.g. USB-C cable">
+        </div>
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select id="category"></select>
+        </div>
+        <div class="form-group">
+          <label for="quantity">Quantity</label>
+          <input id="quantity" type="number" min="1" value="1">
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status"></select>
+        </div>
+        <div class="form-group full-width">
+          <label for="notes">Notes (optional)</label>
+          <textarea id="notes" placeholder="Any extra details..."></textarea>
+        </div>
+        <div class="full-width">
+          <button type="submit" class="btn btn-primary">Add Item</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Filters -->
+    <section class="panel">
+      <h2 class="panel-title">Your Items</h2>
+      <div class="toolbar">
+        <div class="form-group">
+          <label for="search">Search</label>
+          <input id="search" placeholder="Filter by name...">
+        </div>
+        <div class="form-group">
+          <label for="filterCategory">Category</label>
+          <select id="filterCategory"><option value="all">All</option></select>
+        </div>
+        <div class="form-group">
+          <label for="filterStatus">Status</label>
+          <select id="filterStatus"><option value="all">All</option></select>
+        </div>
+        <div class="form-group">
+          <label for="sortBy">Sort</label>
+          <select id="sortBy">
+            <option value="createdAt">Date added</option>
+            <option value="name">Name</option>
+            <option value="category">Category</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+      </div>
+      <div id="itemsList" class="items-list" style="margin-top: 20px;"></div>
+    </section>
   </div>
 
-  <h2>Items</h2>
-  <ul id="itemsList"></ul>
-
-  <div id="stats">
-    <h3>Category Stats</h3>
-    <ul id="statsList"></ul>
+  <!-- Edit modal -->
+  <div id="editModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>Edit Item</h2>
+      <form id="editForm" class="form-grid">
+        <input type="hidden" id="editId">
+        <div class="form-group full-width">
+          <label for="editName">Name</label>
+          <input id="editName" required>
+        </div>
+        <div class="form-group">
+          <label for="editCategory">Category</label>
+          <select id="editCategory"></select>
+        </div>
+        <div class="form-group">
+          <label for="editQuantity">Quantity</label>
+          <input id="editQuantity" type="number" min="1">
+        </div>
+        <div class="form-group">
+          <label for="editStatus">Status</label>
+          <select id="editStatus"></select>
+        </div>
+        <div class="form-group full-width">
+          <label for="editNotes">Notes</label>
+          <textarea id="editNotes"></textarea>
+        </div>
+        <div class="modal-actions full-width">
+          <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
   </div>
 
-  <script>
-    // Load items from backend
-    const loadItems = async () => {
-      try {
-        // Fetch items
-        const res = await fetch('/api/items');
-        const items = await res.json();
-        const list = document.getElementById('itemsList');
-        list.innerHTML = '';
+  <!-- Delete confirmation modal -->
+  <div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>Delete Item?</h2>
+      <p id="deleteMessage">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelDelete">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
 
-        items.forEach(it => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <span><strong>${it.name}</strong> (${it.category}) - Qty: ${it.quantity}</span>
-            <span class="info">Added by: ${it.addedBy || 'Anonymous'}</span>
-            <div class="buttons">
-              <button class="bought-btn" onclick="inc('${it._id}')">+1</button>
-              <button class="delete-btn" onclick="del('${it._id}')">Delete</button>
-            </div>
-          `;
-          list.appendChild(li);
-        });
-
-        // Fetch stats
-        const statsRes = await fetch('/api/items/stats');
-        const stats = await statsRes.json();
-        const statsList = document.getElementById('statsList');
-        statsList.innerHTML = '';
-        stats.forEach(s => {
-          const li = document.createElement('li');
-          li.innerHTML = `<strong>${s._id}</strong>: ${s.count} items (Total Qty: ${s.totalQty})`;
-          statsList.appendChild(li);
-        });
-      } catch (err) {
-        console.error('Error loading items:', err);
-      }
-    };
-
-    // Delete item
-    async function del(id) {
-      await fetch('/api/items/' + id, { method: 'DELETE' });
-      loadItems();
-    }
-
-    // Increment quantity
-    async function inc(id) {
-      const r = await fetch('/api/items/' + id);
-      const it = await r.json();
-      await fetch('/api/items/' + id, {
-        method: 'PUT',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ quantity: it.quantity + 1 })
-      });
-      loadItems();
-    }
-
-    // Add new item
-    document.getElementById('addBtn').addEventListener('click', async () => {
-      const name = document.getElementById('name').value;
-      const category = document.getElementById('category').value || 'General';
-      const quantity = parseInt(document.getElementById('quantity').value || '1', 10);
-      const addedBy = document.getElementById('addedBy').value || 'Anonymous';
-
-      await fetch('/api/items', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ name, category, quantity, addedBy })
-      });
-
-      // Reset form
-      document.getElementById('name').value = '';
-      document.getElementById('category').value = '';
-      document.getElementById('quantity').value = 1;
-      document.getElementById('addedBy').value = '';
-
-      loadItems();
-    });
-
-    // Initial load
-    loadItems();
-  </script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/items.js"></script>
 </body>
 </html>

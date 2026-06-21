@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — Animated Item Manager</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <h1>Create account</h1>
+      <p class="subtitle">Your items and diary stay private to you</p>
+
+      <div id="error" class="auth-error"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" required minlength="3" maxlength="30" autocomplete="username" placeholder="krithika">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required autocomplete="email" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters">
+        </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+      </form>
+
+      <p class="auth-footer">Already have an account? <a href="/login.html">Log in</a></p>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    Auth.getUser().then(user => {
+      if (user) window.location.href = '/home.html';
+    });
+
+    const form = document.getElementById('registerForm');
+    const errorEl = document.getElementById('error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.classList.remove('visible');
+
+      const res = await Auth.apiFetch('/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value
+        })
+      });
+
+      if (res.ok) {
+        window.location.href = '/home.html';
+        return;
+      }
+
+      const data = await res.json();
+      errorEl.textContent = data.error || 'Registration failed';
+      errorEl.classList.add('visible');
+    });
+  </script>
+</body>
+</html>

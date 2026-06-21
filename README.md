@@ -1,25 +1,40 @@
-# 🎨 Animated Item Manager + Diary App
+# Animated Item Manager + Diary App
 
-A full-stack productivity web application combining an **item management system** and a **personal diary**, built using **Node.js, Express.js, and MongoDB**. This project began as a front-end-only application during a web development internship and was independently extended into a complete full-stack system with persistent cloud storage.
+A full-stack productivity web application combining a **personal inventory tracker** and a **private diary**, built with **Node.js, Express.js, MongoDB, and vanilla JavaScript**.
 
 🔗 **Live Demo:** https://animated-item-manager-1.onrender.com/
-*(Hosted on Render free tier — may take 30–60 seconds to load on first visit after inactivity)*
 
 ---
 
 ## Overview
 
-Animated Item Manager lets users manage everyday items and maintain a personal diary, all backed by a real database instead of local/temporary storage. The project focuses on full CRUD functionality, clean RESTful route design, and a distinct, animated UI experience for each section of the app.
+Each user gets their own private workspace: items and diary entries are scoped to the logged-in account via session-based authentication. The Item Manager supports search, filtering, sorting, and category dashboards — not just basic CRUD.
 
 ---
 
 ## Features
 
-- **Item Manager** — Create, view, update, and delete items with a stylish animated interface
-- **Personal Diary** — Full CRUD operations for diary entries, with a separate visual theme and font styling from the item manager
-- **MongoDB Atlas Integration** — Persistent cloud-based storage replacing the original local-storage approach
-- **RESTful API Design** — Clean, modular Express routes separating item and diary logic
-- **Animated, Responsive UI** — Custom CSS animations and distinct styling across views
+### Authentication
+- Sign up / log in with email and password
+- Passwords hashed with **bcrypt** (via `bcryptjs`)
+- **Session-based auth** — server stores session in MongoDB; browser sends an httpOnly cookie automatically
+- Logout destroys the session
+
+### Item Manager
+- Add items with name, category (dropdown), quantity, status, and optional notes
+- Search by name, filter by category/status, sort by date/name/category
+- Edit and delete (with confirmation) existing items
+- Category summary dashboard at the top
+
+### Diary
+- Private journal entries tied to your account
+- Sort newest or oldest first
+- Edit and delete with confirmation modals
+
+### UI
+- Cohesive glassmorphism design across all pages
+- Subtle animations on cards, modals, and list changes
+- Fully responsive layout
 
 ---
 
@@ -29,7 +44,8 @@ Animated Item Manager lets users manage everyday items and maintain a personal d
 |---|---|
 | Backend | Node.js, Express.js |
 | Database | MongoDB Atlas |
-| Frontend | HTML, CSS, JavaScript |
+| Auth | bcryptjs, express-session, connect-mongo |
+| Frontend | HTML, CSS, JavaScript (vanilla) |
 | Deployment | Render |
 
 ---
@@ -38,10 +54,12 @@ Animated Item Manager lets users manage everyday items and maintain a personal d
 
 ```
 animated-item-manager/
-├─ models/      # Mongoose schemas for items & diary entries
-├─ routes/      # Express route handlers (items, diary)
-├─ public/      # Static assets (CSS, JS, images)
-├─ index.js     # App entry point & server setup
+├─ models/          # User, Item, Diary Mongoose schemas
+├─ middleware/      # Auth middleware (requireAuth)
+├─ routes/          # auth, items, diary route handlers
+├─ scripts/         # seed.js — demo data for live preview
+├─ public/          # Static frontend (HTML, CSS, JS)
+├─ index.js         # Server entry point
 ├─ package.json
 └─ README.md
 ```
@@ -50,42 +68,41 @@ animated-item-manager/
 
 ## How to Run Locally
 
-1. Clone the repository
- ```
- git clone https://github.com/KrithikaDevadiga444/animated-item-manager.git
- cd animated-item-manager
- ```
-2. Install dependencies
- ```
- npm install
- ```
-3. Add your MongoDB connection string as an environment variable (`.env` file):
- ```
- MONGODB_URI=your_mongodb_atlas_connection_string
- ```
-4. Run the app
- ```
- npm run dev
- ```
-5. Open `http://localhost:3000` (or your configured port) in your browser.
+1. Clone and install:
+   ```bash
+   git clone https://github.com/KrithikaDevadiga444/animated-item-manager.git
+   cd animated-item-manager
+   npm install
+   ```
+
+2. Create a `.env` file:
+   ```
+   MONGO_URI=your_mongodb_atlas_connection_string
+   SESSION_SECRET=a-long-random-string-for-production
+   ```
+
+3. (Optional) Seed demo data for interviews/live demo:
+   ```bash
+   npm run seed
+   ```
+   Demo login: `demo@animatedmanager.app` / `demo1234`
+
+4. Start the server:
+   ```bash
+   npm run dev
+   ```
+
+5. Open `http://localhost:5000` in your browser.
 
 ---
 
-## Project Origin
+## Auth Flow (Interview Cheat Sheet)
 
-This project began as a front-end-only application (HTML, CSS, JavaScript) built during a Front-End Web Development internship under the AICTE–Edunet Foundation–IBM SkillBuild initiative.
-👉 See the original version: [TaskManager](https://github.com/KrithikaDevadiga444/TaskManager)
-
-It was later independently rebuilt and extended into a full-stack application with a Node.js/Express backend and MongoDB Atlas database to add persistent storage and a more robust architecture.
-
----
-
-## Future Enhancements
-
-- User authentication for personal item/diary spaces
-- Image upload support for diary entries
-- Search and filter functionality for items
-- Dark mode toggle
+1. **Register** — password is hashed with bcrypt (10 salt rounds) and stored as `passwordHash`. Never store plain text.
+2. **Login** — bcrypt compares the submitted password to the hash. On success, `req.session.userId` is set.
+3. **Session cookie** — Express sends a signed session ID cookie (`httpOnly`, so JavaScript cannot read it — XSS protection).
+4. **Protected routes** — `requireAuth` middleware checks `req.session.userId`. Items/diary queries always filter by that user ID.
+5. **Logout** — session is destroyed server-side; cookie is cleared.
 
 ---
 

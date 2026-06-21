@@ -1,81 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Diary</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Diary</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body class="diary-page">
-
-<a href="/home.html" class="home-btn">🏠 Home</a>
-
-<h1>My Diary</h1>
-
-<div class="diary-container">
-  <textarea id="content" placeholder="Write your thoughts..."></textarea>
-  <button class="add-btn" onclick="addEntry()">Save</button>
-</div>
-
-<div class="entries-list" id="entries"></div>
-
-<script>
-async function loadDiary() {
-  const res = await fetch('/api/diary');
-  const data = await res.json();
-  const div = document.getElementById('entries');
-  div.innerHTML = '';
-
-  data.forEach(d => {
-    const card = document.createElement('div');
-    card.className = 'entry-card';
-
-    card.innerHTML = `
-      <div class="entry-header">
-        <strong>${new Date(d.createdAt).toDateString()}</strong>
+  <div class="page">
+    <nav id="navbar" class="navbar">
+      <div class="navbar-left">
+        <a href="/home.html" class="nav-link">Home</a>
+        <a href="/index.html" class="nav-link">Items</a>
+        <a href="/diary.html" class="nav-link active">Diary</a>
       </div>
-      <p class="entry-content">${d.content}</p>
-      <div class="entry-buttons">
-        <button onclick="editEntry('${d._id}', '${d.content.replace(/'/g,"\\'")}')">Edit</button>
-        <button onclick="deleteEntry('${d._id}')">Delete</button>
+      <div class="navbar-right">
+        <span class="user-badge"></span>
+        <button class="btn-logout">Log Out</button>
       </div>
-    `;
-    div.appendChild(card);
-  });
-}
+    </nav>
 
-async function addEntry() {
-  const content = document.getElementById('content').value;
-  if (!content) return;
+    <header class="page-header">
+      <h1>📔 My Diary</h1>
+      <p>A private space for your thoughts</p>
+    </header>
 
-  await fetch('/api/diary', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ content })
-  });
+    <section class="panel">
+      <textarea id="content" class="diary-textarea" placeholder="What's on your mind today?"></textarea>
+      <div class="btn-group">
+        <button id="saveBtn" class="btn btn-primary">Save Entry</button>
+      </div>
+    </section>
 
-  document.getElementById('content').value = '';
-  loadDiary();
-}
+    <section class="panel">
+      <div class="sort-bar">
+        <label for="sortOrder">Sort entries:</label>
+        <select id="sortOrder">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </div>
+      <div id="entries" class="entries-list"></div>
+    </section>
+  </div>
 
-async function deleteEntry(id) {
-  await fetch('/api/diary/' + id, { method: 'DELETE' });
-  loadDiary();
-}
+  <!-- Edit modal -->
+  <div id="editModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>Edit Entry</h2>
+      <textarea id="editContent" class="diary-textarea" style="min-height: 140px;"></textarea>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmEdit">Save</button>
+      </div>
+    </div>
+  </div>
 
-async function editEntry(id, oldText) {
-  const newText = prompt('Edit entry:', oldText);
-  if (!newText) return;
+  <!-- Delete confirmation -->
+  <div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>Delete Entry?</h2>
+      <p>This entry will be permanently removed.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelDelete">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
 
-  await fetch('/api/diary/' + id, {
-    method: 'PUT',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ content: newText })
-  });
-
-  loadDiary();
-}
-
-loadDiary();
-</script>
-
+  <script src="/js/auth.js"></script>
+  <script src="/js/diary.js"></script>
 </body>
 </html>
