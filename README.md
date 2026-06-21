@@ -1,40 +1,42 @@
-# Animated Item Manager + Diary App
+# 🎨 My Digital Space — Animated Item Manager + Diary App
 
-A full-stack productivity web application combining a **personal inventory tracker** and a **private diary**, built with **Node.js, Express.js, MongoDB, and vanilla JavaScript**.
+A full-stack productivity web application combining a **personal inventory management system** and a **private diary**, built using **Node.js, Express.js, and MongoDB**, with full user authentication. This project began as a front-end-only application during a web development internship and was independently extended into a complete, secured full-stack system with persistent cloud storage.
 
 🔗 **Live Demo:** https://animated-item-manager-1.onrender.com/
+*(Hosted on Render free tier — may take 30–60 seconds to load on first visit after inactivity)*
 
 ---
 
 ## Overview
 
-Each user gets their own private workspace: items and diary entries are scoped to the logged-in account via session-based authentication. The Item Manager supports search, filtering, sorting, and category dashboards — not just basic CRUD.
+My Digital Space lets users securely manage a personal inventory and maintain a private diary, all backed by a real database and protected by user authentication. Every user's items and diary entries are private to their own account. The project focuses on full CRUD functionality, clean RESTful route design, thoughtful UX (search, filter, sort, status tracking), and a distinct, animated UI experience across the app.
 
 ---
 
 ## Features
 
-### Authentication
-- Sign up / log in with email and password
-- Passwords hashed with **bcrypt** (via `bcryptjs`)
-- **Session-based auth** — server stores session in MongoDB; browser sends an httpOnly cookie automatically
-- Logout destroys the session
+### 🔐 Authentication
+- Secure signup and login with hashed passwords
+- Session-based authentication — each user only sees and manages their own data
+- Persistent login state shown across all pages ("Signed in as ___") with logout support
 
-### Item Manager
-- Add items with name, category (dropdown), quantity, status, and optional notes
-- Search by name, filter by category/status, sort by date/name/category
-- Edit and delete (with confirmation) existing items
-- Category summary dashboard at the top
+### 📦 Item Manager
+- Add items with **name, category, quantity, status, and optional notes** — not just a basic list
+- Category dropdown (Groceries, Stationery, Electronics, Household, Other)
+- Status tracking (Needed / Purchased / In Use)
+- **Search** items by name, **filter** by category and status, **sort** by date added
+- Category summary dashboard showing item counts and total quantity per category
+- Full CRUD — Add, Edit, Delete, and quantity updates
 
-### Diary
-- Private journal entries tied to your account
-- Sort newest or oldest first
-- Edit and delete with confirmation modals
+### 📔 Personal Diary
+- Full CRUD operations for diary entries
+- Entries sorted newest/oldest first
+- Distinct visual theme and font styling from the Item Manager
+- Entries are private and tied to the logged-in user
 
-### UI
-- Cohesive glassmorphism design across all pages
-- Subtle animations on cards, modals, and list changes
-- Fully responsive layout
+### 🎨 UI/UX
+- Custom animated, responsive interface across all pages
+- Distinct visual identity per section (Home, Items, Diary) while staying cohesive
 
 ---
 
@@ -44,8 +46,8 @@ Each user gets their own private workspace: items and diary entries are scoped t
 |---|---|
 | Backend | Node.js, Express.js |
 | Database | MongoDB Atlas |
-| Auth | bcryptjs, express-session, connect-mongo |
-| Frontend | HTML, CSS, JavaScript (vanilla) |
+| Authentication | Sessions, bcrypt password hashing |
+| Frontend | HTML, CSS, JavaScript |
 | Deployment | Render |
 
 ---
@@ -54,12 +56,10 @@ Each user gets their own private workspace: items and diary entries are scoped t
 
 ```
 animated-item-manager/
-├─ models/          # User, Item, Diary Mongoose schemas
-├─ middleware/      # Auth middleware (requireAuth)
-├─ routes/          # auth, items, diary route handlers
-├─ scripts/         # seed.js — demo data for live preview
-├─ public/          # Static frontend (HTML, CSS, JS)
-├─ index.js         # Server entry point
+├─ models/      # Mongoose schemas (User, Item, Diary)
+├─ routes/      # Express route handlers (auth, items, diary)
+├─ public/      # Static assets (CSS, JS, images)
+├─ index.js     # App entry point & server setup
 ├─ package.json
 └─ README.md
 ```
@@ -68,41 +68,42 @@ animated-item-manager/
 
 ## How to Run Locally
 
-1. Clone and install:
-   ```bash
-   git clone https://github.com/KrithikaDevadiga444/animated-item-manager.git
-   cd animated-item-manager
-   npm install
-   ```
-
-2. Create a `.env` file:
-   ```
-   MONGO_URI=your_mongodb_atlas_connection_string
-   SESSION_SECRET=a-long-random-string-for-production
-   ```
-
-3. (Optional) Seed demo data for interviews/live demo:
-   ```bash
-   npm run seed
-   ```
-   Demo login: `demo@animatedmanager.app` / `demo1234`
-
-4. Start the server:
-   ```bash
-   npm run dev
-   ```
-
+1. Clone the repository
+ ```
+ git clone https://github.com/KrithikaDevadiga444/animated-item-manager.git
+ cd animated-item-manager
+ ```
+2. Install dependencies
+ ```
+ npm install
+ ```
+3. Add your MongoDB connection string as an environment variable (`.env` file):
+ ```
+ MONGO_URI=your_mongodb_atlas_connection_string
+ ```
+4. Run the app
+ ```
+ npm run dev
+ ```
 5. Open `http://localhost:5000` in your browser.
 
 ---
 
-## Auth Flow (Interview Cheat Sheet)
+## Project Origin
 
-1. **Register** — password is hashed with bcrypt (10 salt rounds) and stored as `passwordHash`. Never store plain text.
-2. **Login** — bcrypt compares the submitted password to the hash. On success, `req.session.userId` is set.
-3. **Session cookie** — Express sends a signed session ID cookie (`httpOnly`, so JavaScript cannot read it — XSS protection).
-4. **Protected routes** — `requireAuth` middleware checks `req.session.userId`. Items/diary queries always filter by that user ID.
-5. **Logout** — session is destroyed server-side; cookie is cleared.
+This project began as a front-end-only application (HTML, CSS, JavaScript) built during a Front-End Web Development internship under the AICTE–Edunet Foundation–IBM SkillBuild initiative.
+👉 See the original version: [TaskManager](https://github.com/KrithikaDevadiga444/TaskManager)
+
+It was later independently rebuilt and significantly extended — adding a Node.js/Express backend, MongoDB Atlas database, full user authentication, and a redesigned, feature-rich inventory system — to create a complete, secure, full-stack application.
+
+---
+
+## Future Enhancements
+
+- Image upload support for diary entries and inventory items
+- Email-based password reset
+- Dark mode toggle
+- Export inventory/diary data as CSV or PDF
 
 ---
 
